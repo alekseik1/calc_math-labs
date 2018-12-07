@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def eiler_1(funcs, x_start, t_stop, h=0.1):
     """
     Явный метод Эйлера, самый простой, с o(h)
@@ -13,7 +16,7 @@ def eiler_1(funcs, x_start, t_stop, h=0.1):
     while x[0] < t_stop:
         x += h*funcs(x)
         y.append(x.copy())
-    return y
+    return np.array(y).T
 
 
 def eiler_2(funcs, x_start, t_stop, h=0.1):
@@ -35,7 +38,7 @@ def eiler_2(funcs, x_start, t_stop, h=0.1):
         x_tmp = x + h*(funcs(x) + funcs(x_tmp_tmp))/2
         x += h*(funcs(x) + funcs(x_tmp))/2
         y.append(x.copy())
-    return y
+    return np.array(y).T
 
 
 def eiler_3(funcs, x_start, t_stop, h=0.1):
@@ -56,7 +59,7 @@ def eiler_3(funcs, x_start, t_stop, h=0.1):
         # Результат прибавлять в качестве вектора касательной
         x += h*x_tmp
         y.append(x.copy())
-    return y
+    return np.array(y).T
 
 
 # TODO: придумай, что делать с методом трапеций
@@ -78,4 +81,4 @@ def trapezium(funcs, x_start, t_stop, h=0.1):
         # Результат прибавлять в качестве вектора касательной
         x += h*x_tmp
         y.append(x.copy())
-    return y
+    return np.array(y).T

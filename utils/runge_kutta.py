@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.integrate import solve_ivp
 
 
 class RungeExplicit:
@@ -28,7 +29,7 @@ class RungeExplicit:
                 x += np.array([0] + list(h*K[i]*self.gammas[i]))
             x += np.array([h] + [0]*(len(x)-1))
             y.append(x.copy())
-        return np.array(y)
+        return np.array(y).T
 
 
 def create_runge_solver(order=4):
@@ -90,3 +91,15 @@ def adams(order, funcs, x_start, t_stop, h=0.001):
         return adams_4(funcs, x_start, t_stop, h)
     else:
         raise ValueError("Not implemented yet")
+
+
+def dorman_prince(funcs, x_start, t_stop, h=0.1):
+    from scipy.integrate import solve_ivp
+    # Если начальное и конечное время совпадают, solve_ivp падает
+    if x_start[0] == t_stop:
+        return np.array([x_start]).T
+    return solve_ivp(funcs,
+                     (x_start[0], t_stop),
+                     x_start,
+                     method='RK45',
+                     t_eval=np.arange(x_start[0], t_stop, h)).y
