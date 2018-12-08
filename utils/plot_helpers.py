@@ -8,6 +8,14 @@ def compare_results(theor, predicted):
 
 
 def plot_lines(*args, **kwargs):
+    """
+    Рисует графики. Пример (нарисует линии):
+
+    >>> plot_lines(([1, 2], [2, 3]), ([3, 4, 5], [9, 16, 25]))
+
+    :param args: Кортеж из данных
+    :param kwargs: Сюда можно передать 'title', и он отобразится в графике
+    """
     title = kwargs.get('title')
     for (x_data, y_data) in args:
         plt.plot(x_data, y_data)
