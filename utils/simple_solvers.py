@@ -11,7 +11,7 @@ def eiler_1(funcs, x_start, t_stop, h=0.1):
     :return:
     """
     # Начальное значение
-    x = x_start
+    x = x_start.copy()
     y = [x_start.copy()]
     while x[0] < t_stop:
         x += h*funcs(x)
@@ -29,7 +29,7 @@ def eiler_2(funcs, x_start, t_stop, h=0.1):
     :return:
     """
     # Начальное значение
-    x = x_start
+    x = x_start.copy()
     y = [x_start.copy()]
     while x[0] < t_stop:
         # Прогноз
@@ -51,7 +51,7 @@ def eiler_3(funcs, x_start, t_stop, h=0.1):
     :return:
     """
     # Начальное значение
-    x = x_start
+    x = x_start.copy()
     y = [x_start.copy()]
     while x[0] < t_stop:
         # Нам придется "подгядеть" f_(i+1), а затем взять полусумму с f_i
@@ -72,8 +72,9 @@ def trapezium(funcs, x_start, t_stop, h=0.1):
     :param h:
     :return:
     """
+    return eiler_3(funcs, x_start, t_stop, h)
     # Начальное значение
-    x = x_start
+    x = x_start.copy()
     y = [x_start.copy()]
     while x[0] < t_stop:
         # Нам придется "подгядеть" f_(i+1), а затем взять полусумму с f_i

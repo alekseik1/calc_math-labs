@@ -49,9 +49,12 @@ def count_error(x_predicted, theor_function):
             np.abs(x_predicted[1] - theor_function(x_predicted[0])))
 
 
-def describe_after_execution(t_theor):
+def describe_after_execution(t_theor, h_range=[]):
     """
     Декоратор для описания результатов после вычисления
+
+    :param t_theor: Теоретическое уравнение
+    :param h_range: Диапазон h. Для задач, где просят сравнить результаты с другим шагом
     """
     def real_decorator(func):
         def func_wrapper(*args, **kwargs):
@@ -62,18 +65,58 @@ def describe_after_execution(t_theor):
                 # Потому что третьим параметром передается конечное время
                 t_stop
             ))
-            solution = func(*args, **kwargs)
-            # Функция обязательно должна возвращать данные в виде [t, x]
-            t_pred, x_pred = solution[0], solution[1]
+            # Если передан диапазон h, то мы подменяем переданный `h=(что-то)` kwarg функции на свой.
+            # Это плохое проектирование, но мне нужно уже быстрее спихнуть вычматы
+            solutions = []
+            plot_data = []
+            do_once = True
+            if len(h_range) != 0 and kwargs.get('h'):
+                for h in h_range:
+                    # Подменяем h
+                    kwargs['h'] = h
 
-            t_range = np.linspace(min(t_pred), max(t_pred), 1000)
-            # WARNING: тут находится нечисть! Небоходимо, чтобы t_theor был в общем пространстве имен!!!
-            x_range = t_theor(t_range)
 
-            plot_lines((t_pred, x_pred, r'Подсчитанное'),
-                       (t_range, x_range, r'Теоретическое'),
+                    # Выполняем
+                    solution = func(*args, **kwargs)
+
+                    # Функция обязательно должна возвращать данные в виде [t, x]
+                    t_pred, x_pred = solution[0], solution[1]
+
+                    # Получаем теоретические предсказания
+                    t_range = np.linspace(min(t_pred), max(t_pred), 1000)
+                    # WARNING: тут находится нечисть! Небоходимо, чтобы t_theor был в общем пространстве имен!!!
+                    x_range = t_theor(t_range)
+
+                    if do_once:
+
+                        plot_data.append( (t_range, x_range, 'Теоретическое') )
+
+                        do_once = False
+
+                    plot_data.append( (t_pred, x_pred, 'h={}'.format(h)) )
+            else:
+                h = kwargs.get('h')
+                solution = func(*args, **kwargs)
+                # Функция обязательно должна возвращать данные в виде [t, x]
+                t_pred, x_pred = solution[0], solution[1]
+
+                t_range = np.linspace(min(t_pred), max(t_pred), 1000)
+                # WARNING: тут находится нечисть! Небоходимо, чтобы t_theor был в общем пространстве имен!!!
+                x_range = t_theor(t_range)
+
+                plot_data.append( (t_range, x_range, 'Теоретическое') )
+                plot_data.append( (t_pred, x_pred, 'h={}'.format(h)) )
+
+            plot_lines(*plot_data,
                        title='Теор. и подсчитанное решение', x_label=r't', y_label=r'y')
-            plot_lines(count_error(solution, t_theor),
+            error_plot_data = [(*count_error([*data], t_theor),
+                                # Здесь data[2] -- подпись к графику. См. коммент про порядок в массиве ниже
+                                data[2])
+                               # Заметьте, первым в plot_data идет теоретическое решение.
+                               # Его невязку рисовать нет смысла.
+                               # Да, я ориентируюсь на порядок в массиве. Не бейте за это
+                               for data in plot_data[1:]]
+            plot_lines(*error_plot_data,
                        title='Невязка в зависимости от t', x_label=r't', y_label=r'Невязка')
 
             compare_results(t_theor(t_stop), solution[1][-1])
