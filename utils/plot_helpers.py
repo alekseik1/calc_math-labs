@@ -11,16 +11,34 @@ def plot_lines(*args, **kwargs):
     """
     Рисует графики. Пример (нарисует линии):
 
-    >>> plot_lines(([1, 2], [2, 3]), ([3, 4, 5], [9, 16, 25]))
+    >>> plot_lines(([1, 2], [2, 3], 'name'), ([3, 4, 5], [9, 16, 25], 'name2'))
 
     :param args: Кортеж из данных
     :param kwargs: Сюда можно передать 'title', и он отобразится в графике
     """
     title = kwargs.get('title')
-    for (x_data, y_data) in args:
-        plt.plot(x_data, y_data)
+    x_label, y_label = kwargs.get('x_label'), kwargs.get('y_label')
+    for (x_data, *y_data) in args:
+        # Если передали title, то его
+        has_label = False
+        if len(y_data) > 1:
+            has_label = True
+            label = y_data[1]
+            y_data = y_data[0]
+        elif len(y_data) == 1:
+            y_data = y_data[0]
+        if has_label:
+            plt.plot(x_data, y_data, label=label)
+            plt.legend()
+        else:
+            plt.plot(x_data, y_data)
     if title:
         plt.title(title)
+    if x_label:
+        plt.xlabel(x_label)
+    if y_label:
+        plt.ylabel(y_label)
+
     plt.grid()
     plt.show()
 
@@ -52,8 +70,11 @@ def describe_after_execution(t_theor):
             # WARNING: тут находится нечисть! Небоходимо, чтобы t_theor был в общем пространстве имен!!!
             x_range = t_theor(t_range)
 
-            plot_lines((t_pred, x_pred), (t_range, x_range), title='Теор. и подсчитанное решение')
-            plot_lines(count_error(solution, t_theor), title='Невязка в зависимости от t')
+            plot_lines((t_pred, x_pred, r'Подсчитанное'),
+                       (t_range, x_range, r'Теоретическое'),
+                       title='Теор. и подсчитанное решение', x_label=r't', y_label=r'y')
+            plot_lines(count_error(solution, t_theor),
+                       title='Невязка в зависимости от t', x_label=r't', y_label=r'Невязка')
 
             compare_results(t_theor(t_stop), solution[1][-1])
             print('----------------------------------------------------------')
