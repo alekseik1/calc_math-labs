@@ -35,6 +35,9 @@ class RungeExplicit:
 def create_runge_solver(order=4):
     """
     Метод Рунге для самых распространенных порядков аппроксимации
+
+    :param order: Порядок метода
+    :return: Объект класса RungeExplicit, которым можно далее интегрировать
     """
     butcher_matrix = []
     if order == 2:
