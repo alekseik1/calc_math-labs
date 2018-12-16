@@ -55,35 +55,35 @@ def create_runge_solver(order=4):
 def adams(order, funcs, x_start, t_stop, h=0.001):
     def adams_2(funcs, x_start, t_stop, h=0.001):
         init_method = RungeExplicit(np.array([[0, 0, 0], [0.5, 0.5, 0.5], [0, 0, 1]]))
-        y = init_method(funcs, x_start, x_start[0] + h, h)
+        y = init_method(funcs, x_start, x_start[0] + h, h).T
         x = y[-1]
-        y = y[:-1]
+        y = y[:]
         while x[0] < t_stop:
             x += h * ((3 / 2) * funcs(x) - (1 / 2) * funcs(y[-1]))
-            y.append(x.copy())
+            y = np.vstack((y, x.copy()))
         return y
 
     def adams_3(funcs, x_start, t_stop, h=0.001):
         init_method = RungeExplicit(np.array([[0, 0, 0, 0], [0.5, 0.5, 0, 0], [1, 0, 1, 0], [0, 1 / 6, 2 / 3, 1 / 6]]))
-        y = init_method(funcs, x_start, x_start[0] + 2 * h, h)
+        y = init_method(funcs, x_start, x_start[0] + 2 * h, h).T
         x = y[-1]
-        y = y[:-1]
+        y = y[:]
         while x[0] < t_stop:
             x += h * ((23 / 12) * funcs(x) - (16 / 12) * funcs(y[-1]) + (5 / 12) * funcs(y[-2]))
-            y.append(x.copy())
+            y = np.vstack((y, x.copy()))
         return y
 
     def adams_4(funcs, x_start, t_stop, h=0.001):
         init_method = RungeExplicit(np.array(
             [[0, 0, 0, 0, 0], [0.5, 0.5, 0, 0, 0], [0.5, 0, 0.5, 0, 0], [1, 0, 0, 1, 0],
              [0, 1 / 8, 3 / 8, 3 / 8, 1 / 8]]))
-        y = init_method(funcs, x_start, x_start[0] + 3 * h, h)
+        y = init_method(funcs, x_start, x_start[0] + 3 * h, h).T
         x = y[-1]
-        y = y[:-1]
+        y = y[:]
         while x[0] < t_stop:
             x += h * ((55 / 24) * funcs(x) - (59 / 24) * funcs(y[-1]) + (37 / 24) * funcs(y[-2]) - (9 / 24) * funcs(
                 y[-3]))
-            y.append(x.copy())
+            y = np.vstack( (y, x.copy()) )
         return y
 
     if order == 2:
