@@ -47,7 +47,7 @@ def create_runge_solver(order=4):
     elif order == 4:
         # Это классический метод
         butcher_matrix = np.array([[0,0,0,0,0],[0.5,0.5,0,0,0],[0.5,0,0.5,0,0],[1,0,0,1,0],[0,1/8,3/8,3/8,1/8]])
-    if order == []:
+    if butcher_matrix == []:
         raise ValueError("Not implemented yet")
     return RungeExplicit(butcher_matrix)
 
