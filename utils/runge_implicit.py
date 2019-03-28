@@ -80,13 +80,13 @@ class RungeImplicit:
             self.t_start == 0
         except NameError as e:
             raise RuntimeError('Вы должны вызвать `set_params` перед решением системы')
+        self.t = np.arange(self.t_start, self.t_stop, self.h)
         self.n_step = 0
-        self.n_stop = int(np.floor((self.t_stop - self.t_start) / self.h))
+        self.n_stop = self.t.shape[0]
         self.y = np.zeros([self.n_stop, self.system_size], dtype=np.float64)
         # Установим начальное значение
         self.y[0] = self.y_init
         self.k = np.empty([self.s, self.system_size])
-        self.t = np.arange(self.t_start, self.t_stop, self.h)
 
     def set_params(self, h, y_init, t_limits, system_size):
         """
