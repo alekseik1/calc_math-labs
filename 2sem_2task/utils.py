@@ -50,7 +50,7 @@ class AnimationHelper:
     """
     
     def __init__(self, solution, x_grid, t_grid, ylabel, fig=None, axes=None):
-        self.solution, self.ylabel = solution, ylabel
+        self.solution, self.ylabel = solution[:,1:], ylabel
         self.x_grid, self.t_grid = x_grid, t_grid
         self.fig, self.axes = fig, axes
         self.ani = None
